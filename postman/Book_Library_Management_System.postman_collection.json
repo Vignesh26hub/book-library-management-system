@@ -1,0 +1,247 @@
+{
+  "info": {
+    "_postman_id": "b784a920-56e1-4c12-98cd-112233445566",
+    "name": "Book Library Management System API",
+    "description": "Production-grade REST API collection for Book Library Management System built with Node.js, Express, MongoDB, and Mongoose.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1/books",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "health"]
+        },
+        "description": "Checks whether the API server is up and running."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Add Book - Success (201 Created)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"The Pragmatic Programmer\",\n  \"author\": \"David Thomas & Andrew Hunt\",\n  \"isbn\": \"978-0135957059\",\n  \"category\": \"Software Engineering\",\n  \"publicationYear\": 2019,\n  \"totalCopies\": 8,\n  \"availableCopies\": 6\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": ["{{baseUrl}}"]
+        },
+        "description": "Creates a new book record with automatic ID generation and validation."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Add Book - Validation Failure (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"\",\n  \"author\": \"\",\n  \"isbn\": \"\",\n  \"category\": \"\",\n  \"publicationYear\": 850,\n  \"totalCopies\": -3,\n  \"availableCopies\": 10\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": ["{{baseUrl}}"]
+        },
+        "description": "Fails validation: empty fields, year < 1000, negative total copies, availableCopies > totalCopies."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Add Book - Duplicate ISBN (409 Conflict)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Duplicate Test Book\",\n  \"author\": \"Another Author\",\n  \"isbn\": \"978-0135957059\",\n  \"category\": \"General\",\n  \"publicationYear\": 2022,\n  \"totalCopies\": 5\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": ["{{baseUrl}}"]
+        },
+        "description": "Attempts to add a book with an existing ISBN, returning 409 Conflict."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get All Books (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Retrieves paginated list of books with total count and metadata."
+      },
+      "response": []
+    },
+    {
+      "name": "6. Get Book By ID (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/673892ab12cdef3456789012",
+          "host": ["{{baseUrl}}"],
+          "path": ["673892ab12cdef3456789012"]
+        },
+        "description": "Retrieves book details by MongoDB _id or custom bookId."
+      },
+      "response": []
+    },
+    {
+      "name": "7. Get Book By ID - Not Found (404 Not Found)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/673892ab12cdef3456789999",
+          "host": ["{{baseUrl}}"],
+          "path": ["673892ab12cdef3456789999"]
+        },
+        "description": "Returns 404 when requested book ID does not exist."
+      },
+      "response": []
+    },
+    {
+      "name": "8. Update Book (200 OK)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"totalCopies\": 12,\n  \"availableCopies\": 10\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/673892ab12cdef3456789012",
+          "host": ["{{baseUrl}}"],
+          "path": ["673892ab12cdef3456789012"]
+        },
+        "description": "Updates an existing book record with field validations."
+      },
+      "response": []
+    },
+    {
+      "name": "9. Search Books by Title (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/search/title?query=Pragmatic",
+          "host": ["{{baseUrl}}"],
+          "path": ["search", "title"],
+          "query": [
+            {
+              "key": "query",
+              "value": "Pragmatic"
+            }
+          ]
+        },
+        "description": "Case-insensitive partial match search on book title."
+      },
+      "response": []
+    },
+    {
+      "name": "10. Search Books by Author (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/search/author?query=Thomas",
+          "host": ["{{baseUrl}}"],
+          "path": ["search", "author"],
+          "query": [
+            {
+              "key": "query",
+              "value": "Thomas"
+            }
+          ]
+        },
+        "description": "Case-insensitive partial match search on author name."
+      },
+      "response": []
+    },
+    {
+      "name": "11. Filter Books by Category (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/filter/category?category=Software Engineering",
+          "host": ["{{baseUrl}}"],
+          "path": ["filter", "category"],
+          "query": [
+            {
+              "key": "category",
+              "value": "Software Engineering"
+            }
+          ]
+        },
+        "description": "Filters books by category."
+      },
+      "response": []
+    },
+    {
+      "name": "12. Delete Book (200 OK)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/673892ab12cdef3456789012",
+          "host": ["{{baseUrl}}"],
+          "path": ["673892ab12cdef3456789012"]
+        },
+        "description": "Deletes a book by ID."
+      },
+      "response": []
+    }
+  ]
+}
